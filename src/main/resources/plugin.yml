@@ -1,0 +1,7 @@
+name: SeniorParkour
+version: '${version}'
+main: it.dani.seniorparkour.SeniorParkour
+api-version: 1.16
+depend: [ PlaceholderAPI ]
+authors: [ ImDxni ]
+description: SeniorTeams Apply
