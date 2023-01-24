@@ -1,9 +1,12 @@
 package it.dani.seniorparkour;
 
+import it.dani.seniorparkour.commands.ParkourCommand;
 import it.dani.seniorparkour.configuration.ConfigLoader;
 import it.dani.seniorparkour.configuration.ConfigManager;
 import it.dani.seniorparkour.configuration.ConfigType;
 import it.dani.seniorparkour.database.DatabaseManager;
+import it.dani.seniorparkour.listeners.FlyListener;
+import it.dani.seniorparkour.listeners.MoveListener;
 import it.dani.seniorparkour.placeholders.ParkourExpansion;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
@@ -25,6 +28,9 @@ public final class SeniorParkour extends JavaPlugin {
     @Getter
     private DatabaseManager databaseManager;
 
+    @Getter
+    private ParkourService parkourService;
+
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
@@ -37,11 +43,19 @@ public final class SeniorParkour extends JavaPlugin {
         }
 
         scoreboardManager = new ScoreboardManager();
+        parkourService = new ParkourService(this);
 
-        loadServices(new ParkourService(this),scoreboardManager);
+        loadServices(parkourService,scoreboardManager);
+
+        Bukkit.getPluginManager().registerEvents(new FlyListener(parkourService),this);
+        Bukkit.getPluginManager().registerEvents(new MoveListener(this),this);
 
 
         Bukkit.getScheduler().runTaskTimer(this,scoreboardManager,0,5);
+
+        getCommand("parkour").setExecutor(new ParkourCommand());
+
+        //TODO MESSAGGI CONFIGURABILI - OLOGRAMMI
     }
 
     @Override

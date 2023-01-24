@@ -9,7 +9,7 @@ import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -32,6 +32,18 @@ public class ParkourService implements ConfigLoader {
         startMaterial = Material.valueOf(config.getString("blocks.start"));
         endMaterial = Material.valueOf(config.getString("blocks.end"));
         checkPointMaterial = Material.valueOf(config.getString("blocks.checkpoint"));
+    }
+
+    public Optional<Parkour> getParkourByStart(Block start){
+        return parkours.stream()
+                .filter(parkour -> parkour.getStart().getBlock().equals(start))
+                .findFirst();
+    }
+
+    public Optional<ParkourPlayer> getParkourPlayer(Player player){
+        return activePlayers.stream()
+                .filter(parkourPlayer -> parkourPlayer.getUuid().equals(player.getUniqueId()))
+                .findFirst();
     }
 
     public void startParkour(Player player, Parkour parkour){

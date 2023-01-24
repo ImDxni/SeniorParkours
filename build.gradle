@@ -24,17 +24,19 @@ repositories {
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.2'
+    compileOnly 'fr.minuskube.inv:smart-invs:1.2.7'
 
     compileOnly 'org.jetbrains:annotations:16.0.2'
     compileOnly 'org.projectlombok:lombok:1.18.24'
+
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
-def targetJavaVersion = 8
+def targetJavaVersion = 16
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
+    sourceCompatibility = 16
+    targetCompatibility = 16
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }

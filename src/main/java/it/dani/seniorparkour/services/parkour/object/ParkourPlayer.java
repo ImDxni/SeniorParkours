@@ -3,6 +3,7 @@ package it.dani.seniorparkour.services.parkour.object;
 import it.dani.seniorparkour.services.parkour.Parkour;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Location;
 
 import java.util.UUID;
 
@@ -13,8 +14,20 @@ public class ParkourPlayer {
     private final Parkour parkour;
     private int checkpoint = 0;
 
+    private final long startTime = System.currentTimeMillis();
+
 
     public void incrementCheckpoint(){
         checkpoint++;
+    }
+
+    public Location getNextCheckpoint(){
+        int index = checkpoint + 1;
+
+        if(parkour.getCheckPoints().size() == index){
+            return null;
+        }
+
+        return parkour.getCheckPoints().get(checkpoint + 1);
     }
 }
