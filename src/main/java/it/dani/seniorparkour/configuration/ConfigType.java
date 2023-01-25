@@ -9,6 +9,7 @@ public enum ConfigType
 {
     MAIN_CONFIG("config"),
     MESSAGES("messages"),
+    INVENTORIES("inventories"),
     PARKOUR("parkours");
 
 

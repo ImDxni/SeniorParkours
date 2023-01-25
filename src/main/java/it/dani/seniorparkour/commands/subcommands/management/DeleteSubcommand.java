@@ -28,7 +28,7 @@ public class DeleteSubcommand extends Subcommand {
             return;
         }
 
-        if(sender instanceof Player player) {
+        if(sender instanceof Player) {
             String name = args[0];
 
             ParkourService service = getPlugin().getParkourService();

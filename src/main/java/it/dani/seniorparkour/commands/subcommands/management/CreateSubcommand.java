@@ -2,8 +2,6 @@ package it.dani.seniorparkour.commands.subcommands.management;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
-import it.dani.seniorparkour.services.parkour.ParkourService;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

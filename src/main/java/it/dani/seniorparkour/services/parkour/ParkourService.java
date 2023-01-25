@@ -8,6 +8,7 @@ import it.dani.seniorparkour.database.DatabaseManager;
 import it.dani.seniorparkour.database.entity.RPlayer;
 import it.dani.seniorparkour.services.parkour.object.ParkourPlayer;
 import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,6 +23,8 @@ import java.util.*;
 public class ParkourService implements ConfigLoader {
     private final ScoreboardManager scoreboardManager;
     private final DatabaseManager databaseManager;
+
+    @Getter
     private final Set<Parkour> parkours = new HashSet<>();
 
     private final Set<ParkourPlayer> activePlayers = new HashSet<>();

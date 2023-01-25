@@ -68,7 +68,9 @@ public class ParkourCommand implements CommandExecutor, TabExecutor {
                 String[] param = Arrays.copyOfRange(args, 1, args.length + 1);
                 Subcommand subcommand = optionalSubcommand.get();
                 if(sender.hasPermission(subcommand.getPermission())) {
-                    return optionalSubcommand.get().onTabComplete(param);
+                    List<String> tab = optionalSubcommand.get().onTabComplete(param);
+                    if(!tab.isEmpty())
+                        return tab;
                 }
             }
         }
@@ -82,7 +84,7 @@ public class ParkourCommand implements CommandExecutor, TabExecutor {
 
 
     public void initialize() {
-        register(new HelpSubcommand(),
+        register(new HelpSubcommand(plugin),
                 new CreateSubcommand(plugin),
                 new CheckpointSubcommand(plugin),
                 new DeleteSubcommand(plugin),
