@@ -38,14 +38,16 @@ public final class SeniorParkour extends JavaPlugin {
 
         databaseManager = new DatabaseManager(this);
 
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new ParkourExpansion().register();
-        }
 
         scoreboardManager = new ScoreboardManager();
         parkourService = new ParkourService(this);
 
         loadServices(parkourService,scoreboardManager);
+
+
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new ParkourExpansion(parkourService).register();
+        }
 
         Bukkit.getPluginManager().registerEvents(new FlyListener(parkourService),this);
         Bukkit.getPluginManager().registerEvents(new MoveListener(this),this);

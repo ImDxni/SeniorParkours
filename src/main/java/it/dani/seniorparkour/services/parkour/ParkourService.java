@@ -4,6 +4,8 @@ import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.configuration.ConfigLoader;
 import it.dani.seniorparkour.configuration.ConfigManager;
 import it.dani.seniorparkour.configuration.ConfigType;
+import it.dani.seniorparkour.database.DatabaseManager;
+import it.dani.seniorparkour.database.entity.RPlayer;
 import it.dani.seniorparkour.services.parkour.object.ParkourPlayer;
 import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
 import org.bukkit.Bukkit;
@@ -19,6 +21,7 @@ import java.util.*;
 
 public class ParkourService implements ConfigLoader {
     private final ScoreboardManager scoreboardManager;
+    private final DatabaseManager databaseManager;
     private final Set<Parkour> parkours = new HashSet<>();
 
     private final Set<ParkourPlayer> activePlayers = new HashSet<>();
@@ -28,108 +31,142 @@ public class ParkourService implements ConfigLoader {
     public ParkourService(SeniorParkour plugin) {
         YamlConfiguration config = plugin.getConfigManager().getConfig(ConfigType.MAIN_CONFIG);
         scoreboardManager = plugin.getScoreboardManager();
+        databaseManager = plugin.getDatabaseManager();
 
         startMaterial = Material.valueOf(config.getString("blocks.start"));
         endMaterial = Material.valueOf(config.getString("blocks.end"));
         checkPointMaterial = Material.valueOf(config.getString("blocks.checkpoint"));
     }
 
-    public Optional<Parkour> getParkourByStart(Block start){
+    public Optional<Parkour> getParkourByStart(Block start) {
         return parkours.stream()
                 .filter(parkour -> parkour.getStart().getBlock().equals(start))
                 .findFirst();
     }
 
-    public Optional<ParkourPlayer> getParkourPlayer(Player player){
+    public Optional<Parkour> getParkourByName(String name) {
+        return parkours.stream()
+                .filter(parkour -> parkour.getName().equalsIgnoreCase(name))
+                .findFirst();
+    }
+
+    public Optional<ParkourPlayer> getParkourPlayer(Player player) {
         return activePlayers.stream()
                 .filter(parkourPlayer -> parkourPlayer.getUuid().equals(player.getUniqueId()))
                 .findFirst();
     }
 
-    public void startParkour(Player player, Parkour parkour){
-        activePlayers.add(new ParkourPlayer(player.getUniqueId(),parkour));
+    public void startParkour(Player player, Parkour parkour) {
+        ParkourPlayer parkourPlayer = new ParkourPlayer(player.getUniqueId(), parkour);
 
-
-        scoreboardManager.setScoreboard(player,true);
-    }
-
-    public void endParkour(Player player){
-        activePlayers.removeIf(parkourPlayer -> parkourPlayer.getUuid().equals(player.getUniqueId()));
-
-        scoreboardManager.setScoreboard(player,false);
-    }
-
-    public void createParkour(String name, Location loc){
-        parkours.add(new Parkour(name,loc));
-
-        setPointBlock(loc,startMaterial);
-    }
-
-    public void addEndPoint(String name, Location loc){
-        getByName(name).ifPresent(parkour -> {
-            if(parkour.getEnd() != null){
-                parkour.getEnd().getBlock().setType(Material.AIR);
+        databaseManager.playerExists(player.getUniqueId(), parkour.getName()).thenAccept((exists) -> {
+            if (!exists) {
+                activePlayers.add(parkourPlayer);
+                return;
             }
 
-            parkour.setEnd(loc);
+            databaseManager.getTime(player, parkour.getName())
+                    .thenAcceptBoth(databaseManager.getPosition(player, parkour.getName()),
+                            (time, position) -> {
+                                parkourPlayer.setPosition(position);
+                                parkourPlayer.setRecordTime(time);
 
-            setPointBlock(loc,endMaterial);
+                                activePlayers.add(parkourPlayer);
+                            });
         });
+
+
+        scoreboardManager.setScoreboard(player, true);
     }
 
-    public void addCheckPoint(String name, Location loc){
-        getByName(name).ifPresent(parkour -> {
-            parkour.setEnd(loc);
+    public void endParkour(Player player) {
+        Iterator<ParkourPlayer> iterator = activePlayers.iterator();
 
-            setPointBlock(loc,checkPointMaterial);
-        });
+        while (iterator.hasNext()) {
+            ParkourPlayer parkourPlayer = iterator.next();
+
+            if (parkourPlayer.getUuid().equals(player.getUniqueId())) {
+                iterator.remove();
+                RPlayer record = new RPlayer(player.getUniqueId(), player.getName(), parkourPlayer.getParkour().getName(), parkourPlayer.getParkourTime());
+                databaseManager.insertPlayer(record);
+                return;
+            }
+        }
+    }
+
+    public void createParkour(String name, Block block) {
+        parkours.add(new Parkour(name, block.getLocation()));
+
+        setPointBlock(block, startMaterial);
+    }
+
+    public void deleteParkour(Parkour parkour){
+        parkours.remove(parkour);
+        setPointBlock(parkour.getStart().getBlock(), Material.AIR);
+        setPointBlock(parkour.getEnd().getBlock(), Material.AIR);
+
+        for (Location checkPoint : parkour.getCheckPoints()) {
+            setPointBlock(checkPoint.getBlock(),Material.AIR);
+        }
+
+        databaseManager.deleteStats(parkour.getName());
+    }
+
+    public void addEndPoint(Parkour parkour, Block block) {
+        if (parkour.getEnd() != null) {
+            parkour.getEnd().getBlock().setType(Material.AIR);
+        }
+
+        parkour.setEnd(block.getLocation());
+
+        setPointBlock(block, endMaterial);
+    }
+
+    public void addCheckPoint(Parkour parkour, Block block) {
+        parkour.setEnd(block.getLocation());
+
+        setPointBlock(block, checkPointMaterial);
     }
 
 
-    public void removeCheckPoint(String name, int index){
-        getByName(name).ifPresent(parkour ->{
+    public void removeCheckPoint(Parkour parkour, int index) {
+        if(index > 0 && index < parkour.getCheckPoints().size()) {
             Location loc = parkour.getCheckPoints().remove(index);
 
-            loc.getBlock().setType(Material.AIR);
-        });
+            setPointBlock(loc.getBlock(), Material.AIR);
+        }
     }
 
-
-    public Optional<Parkour> getByName(String name){
-        return parkours.stream()
-                .filter(parkour -> parkour.getName().equalsIgnoreCase(name))
-                .findFirst();
-    }
 
     @Override
     public void load(ConfigManager manager) {
         YamlConfiguration config = manager.getConfig(ConfigType.PARKOUR);
 
         ConfigurationSection parkourSection = config.getConfigurationSection("parkours");
-        if(parkourSection == null){
+        if (parkourSection == null) {
             config.createSection("parkours");
             return;
         }
 
         for (String key : parkourSection.getKeys(false)) {
-            Location start,end;
+            Location start, end;
 
-            ConfigurationSection startSection = parkourSection.getConfigurationSection(key+".start");
+            ConfigurationSection startSection = parkourSection.getConfigurationSection(key + ".start");
             start = getLocation(startSection);
 
-            ConfigurationSection endSection = parkourSection.getConfigurationSection(key+".end");
+            ConfigurationSection endSection = parkourSection.getConfigurationSection(key + ".end");
 
             end = getLocation(endSection);
 
-            Parkour parkour = new Parkour(key,start);
+            Parkour parkour = new Parkour(key, start);
 
-            if(end != null){
+            if (end != null) {
                 parkour.setEnd(end);
             }
 
-            ConfigurationSection checkPoints = parkourSection.getConfigurationSection(key+".checkpoints");
+            ConfigurationSection checkPoints = parkourSection.getConfigurationSection(key + ".checkpoints");
 
-            if(checkPoints != null){
+            if (checkPoints != null) {
 
                 for (String pointKey : checkPoints.getKeys(false)) {
                     parkour.addCheckPoint(getLocation(checkPoints.getConfigurationSection(pointKey)));
@@ -143,26 +180,26 @@ public class ParkourService implements ConfigLoader {
     public void unload(ConfigManager manager) {
         YamlConfiguration config = manager.getConfig(ConfigType.PARKOUR);
 
-        config.set("parkours",null);
+        config.set("parkours", null);
 
         ConfigurationSection parkourSection = config.createSection("parkours");
 
         for (Parkour parkour : parkours) {
             String name = parkour.getName();
-            ConfigurationSection startSection = parkourSection.createSection(name+".start");
-            serializeLocation(startSection,parkour.getStart());
+            ConfigurationSection startSection = parkourSection.createSection(name + ".start");
+            serializeLocation(startSection, parkour.getStart());
 
-            if(parkour.getEnd() != null){
-                ConfigurationSection endSection = parkourSection.createSection(name+".end");
-                serializeLocation(endSection,parkour.getEnd());
+            if (parkour.getEnd() != null) {
+                ConfigurationSection endSection = parkourSection.createSection(name + ".end");
+                serializeLocation(endSection, parkour.getEnd());
             }
 
-            if(!parkour.getCheckPoints().isEmpty()){
-                ConfigurationSection pointsSection = parkourSection.createSection(name+".checkpoints");
+            if (!parkour.getCheckPoints().isEmpty()) {
+                ConfigurationSection pointsSection = parkourSection.createSection(name + ".checkpoints");
 
                 int i = 0;
                 for (Location checkPoint : parkour.getCheckPoints()) {
-                    serializeLocation(pointsSection.createSection(name + i),checkPoint);
+                    serializeLocation(pointsSection.createSection(name + i), checkPoint);
 
                     i++;
                 }
@@ -172,26 +209,26 @@ public class ParkourService implements ConfigLoader {
 
     }
 
-    private void setPointBlock(Location loc, Material type){
-        loc.getBlock().setType(type);
+    private void setPointBlock(Block block, Material type) {
+        block.setType(type);
     }
 
-    private Location getLocation(ConfigurationSection section){
-        if(section == null)
+    private Location getLocation(ConfigurationSection section) {
+        if (section == null)
             return null;
 
-        String world = section.getString("world","world");
+        String world = section.getString("world", "world");
         int x = section.getInt("x");
         int y = section.getInt("x");
         int z = section.getInt("x");
 
-        return new Location(Bukkit.getWorld(world),x,y,z);
+        return new Location(Bukkit.getWorld(world), x, y, z);
     }
 
-    private void serializeLocation(ConfigurationSection section,Location loc){
-        section.set("world",loc.getWorld().getName());
-        section.set("x",loc.getBlockX());
-        section.set("y",loc.getBlockY());
-        section.set("z",loc.getBlockZ());
+    private void serializeLocation(ConfigurationSection section, Location loc) {
+        section.set("world", loc.getWorld().getName());
+        section.set("x", loc.getBlockX());
+        section.set("y", loc.getBlockY());
+        section.set("z", loc.getBlockZ());
     }
 }

@@ -46,8 +46,10 @@ public class DatabaseManager {
 
     public void insertPlayer(RPlayer entity){
         playerExists(entity.uuid(),entity.parkour()).thenAccept((exists) -> {
-            if(exists)
+            if(exists) {
+                updatePlayer(entity);
                 return;
+            }
 
             String query = "INSERT INTO parkour(uuid,username,parkour,time) VALUES(?,?,?,?)";
 
@@ -68,8 +70,43 @@ public class DatabaseManager {
         });
     }
 
+    public void updatePlayer(RPlayer entity){
+        String query = "UPDATE parkour SET time=? WHERE uuid=? AND parkour=? AND time>?";
 
-    private CompletableFuture<Boolean> playerExists(UUID player, String parkour){
+        CompletableFuture.runAsync(() -> {
+            try (Connection connection = connectionManager.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(query)) {
+
+                statement.setLong(1, entity.time());
+                statement.setString(2, entity.uuid().toString());
+                statement.setString(3, entity.parkour());
+                statement.setLong(4,entity.time());
+
+
+                statement.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void deleteStats(String parkour){
+        String sql = "DELETE FROM parkour WHERE parkour=?";
+
+        try(Connection connection = connectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setString(1,parkour);
+
+            statement.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public CompletableFuture<Boolean> playerExists(UUID player, String parkour){
         String query = "SELECT * FROM parkour WHERE uuid=? AND parkour=?";
 
         return CompletableFuture.supplyAsync(() -> {
@@ -115,7 +152,7 @@ public class DatabaseManager {
     }
 
     public CompletableFuture<Integer> getPosition(Player player, String parkour){
-        String query = "SELECT COUNT(*) FROM parkour WHERE uuid=? AND parkour=?;";
+        String query = "SELECT COUNT(uuid)+1 FROM parkour WHERE parkour=? AND time < (SELECT time FROM parkour WHERE uuid=? AND parkour=?);";
         return CompletableFuture.supplyAsync(() -> {
             try (Connection connection = connectionManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {
