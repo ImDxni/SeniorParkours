@@ -55,7 +55,7 @@ public final class SeniorParkour extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskTimer(this,scoreboardManager,0,5);
 
-        getCommand("parkour").setExecutor(new ParkourCommand());
+        getCommand("parkour").setExecutor(new ParkourCommand(this));
 
         //TODO MESSAGGI CONFIGURABILI - OLOGRAMMI
     }
