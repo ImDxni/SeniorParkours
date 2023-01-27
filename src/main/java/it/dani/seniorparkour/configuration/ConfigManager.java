@@ -1,6 +1,7 @@
 package it.dani.seniorparkour.configuration;
 
 import it.dani.seniorparkour.SeniorParkour;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -8,15 +9,16 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @RequiredArgsConstructor
 public class ConfigManager {
     private final Map<ConfigType, FileManager> configurations = new HashMap<>();
 
-    private final SeniorParkour instance;
+    private final SeniorParkour plugin;
 
     public void register(ConfigType... type){
         for (ConfigType configType : type) {
-            configurations.put(configType, new FileManager(configType.getPath(),instance));
+            configurations.put(configType, new FileManager(configType.getPath(), plugin));
         }
     }
 

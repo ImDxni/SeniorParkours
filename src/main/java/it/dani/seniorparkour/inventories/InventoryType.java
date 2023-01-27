@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum InventoryType {
     INFO("info"),
+    INFO_CHECKPOINTS("info.checkpoints"),
     TOP("top"),
     STATS("stats");
 

@@ -7,8 +7,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 
 public class DatabaseManager {
@@ -151,13 +152,83 @@ public class DatabaseManager {
         });
     }
 
+    public CompletableFuture<Map<RPlayer,Integer>> getStats(String player){
+        String query = "SELECT * FROM parkour WHERE username=?";
+
+        return CompletableFuture.supplyAsync(() -> {
+            List<RPlayer> records = new ArrayList<>();
+            try(Connection connection = connectionManager.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)){
+
+                statement.setString(1,player);
+
+                ResultSet result = statement.executeQuery();
+
+                while(result.next()){
+                    UUID uuid = UUID.fromString(result.getString(1));
+                    //Second string is username
+                    String parkour = result.getString(3);
+                    long time = result.getLong(4);
+
+                    records.add(new RPlayer(uuid,player,parkour,time));
+                }
+
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+            return records;
+        }).thenApplyAsync((players) -> {
+            Map<RPlayer,Integer> result = new HashMap<>();
+            for (RPlayer rPlayer : players) {
+                try {
+                    result.put(rPlayer,getPosition(rPlayer.uuid(),rPlayer.parkour()).get());
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            return result;
+        });
+    }
+
+    public CompletableFuture<List<RPlayer>> getTop(String parkour, int limit){
+        String query = "SELECT * FROM parkour WHERE parkour=? ORDER BY time LIMIT ?";
+        return CompletableFuture.supplyAsync(() -> {
+            List<RPlayer> records = new ArrayList<>();
+            try(Connection connection = connectionManager.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)){
+
+                statement.setString(1,parkour);
+                statement.setInt(2,limit);
+
+                ResultSet result = statement.executeQuery();
+
+                while(result.next()){
+                    UUID uuid = UUID.fromString(result.getString(1));
+                    String username = result.getString(2);
+                    long time = result.getLong(4);
+
+                    records.add(new RPlayer(uuid,username,parkour,time));
+                }
+
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+            return records;
+        });
+    }
+
     public CompletableFuture<Integer> getPosition(Player player, String parkour){
+        return getPosition(player.getUniqueId(),parkour);
+    }
+
+    private CompletableFuture<Integer> getPosition(UUID uuid,String parkour){
         String query = "SELECT COUNT(uuid)+1 FROM parkour WHERE parkour=? AND time < (SELECT time FROM parkour WHERE uuid=? AND parkour=?);";
         return CompletableFuture.supplyAsync(() -> {
             try (Connection connection = connectionManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {
 
-                statement.setString(1, player.getUniqueId().toString());
+                statement.setString(1, uuid.toString());
                 statement.setString(2, parkour);
 
                 ResultSet result = statement.executeQuery();
