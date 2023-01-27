@@ -11,9 +11,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class HologramAdapterImpl extends HologramAdapter {
-    public HologramAdapterImpl(int entityID) {
-        super(entityID);
-    }
 
     @Override
     public void sendHologram(Function<Player,String> function) {
