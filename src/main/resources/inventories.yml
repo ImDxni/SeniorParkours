@@ -1,0 +1,178 @@
+info:
+  title: "Parkours"
+  size: 3
+  static:
+    '1':
+      material: BLACK_STAINED_GLASS_PANE
+      name: ""
+      lore:
+        - ""
+      slot:
+        row: 0
+        column: 0
+    '2':
+      material: BLACK_STAINED_GLASS_PANE
+      name: ""
+      lore:
+        - ""
+      slot:
+        row: 0
+        column: 1
+  items:
+    start:
+      material: STONE
+      name: "Inizio Parkour"
+      lore:
+        - "Clicca qui per teletrasportati"
+      slot:
+        row: 1
+        column: 1
+    checkpoint:
+      material: GRASS
+      name: "Checkpoints"
+      lore:
+        - "Clicca qui per mostrare i checkpoint"
+      slot:
+        row: 1
+        column: 3
+    end:
+      material: STONE
+      name: "Fine Parkour"
+      lore:
+        - "Clicca qui per teletrasportati"
+      slot:
+        row: 1
+        column: 5
+  checkpoints:
+    title: "Checkpoints"
+    size: 3
+    static:
+      '1':
+        material: BLACK_STAINED_GLASS_PANE
+        name: ""
+        lore:
+          - ""
+        slot:
+          row: 0
+          column: 0
+      '2':
+        material: BLACK_STAINED_GLASS_PANE
+        name: ""
+        lore:
+          - ""
+        slot:
+          row: 0
+          column: 1
+    items:
+      checkpoint:
+        material: GLASS
+        name: "Checkpoint %index%"
+        lore:
+          - "Clicca qui per teletrasportati"
+    pagination:
+      start:
+        row: 1
+        column: 1
+      page:
+        next:
+          material: ARROW
+          name: "Prossima Pagina"
+          lore:
+            - "Clicca per andare alla prossima pagina"
+        previous:
+          material: ARROW
+          name: "Pagina Precedente"
+          lore:
+            - "Clicca per andare alla pagina precedente"
+      items-per-page: 7
+
+
+top:
+  title: "Top"
+  size: 3
+  static:
+    '1':
+      material: BLACK_STAINED_GLASS_PANE
+      name: ""
+      lore:
+        - ""
+      slot:
+        row: 0
+        column: 0
+    '2':
+      material: BLACK_STAINED_GLASS_PANE
+      name: ""
+      lore:
+        - ""
+      slot:
+        row: 0
+        column: 1
+  items:
+    top:
+      material: PLAYER_HEAD
+      name: "%player%"
+      lore:
+        - "Tempo: %time%"
+        - "Posizione: %position%"
+  pagination:
+    start:
+      row: 1
+      column: 1
+    page:
+      next:
+        material: ARROW
+        name: "Prossima Pagina"
+        lore:
+          - "Clicca per andare alla prossima pagina"
+      previous:
+        material: ARROW
+        name: "Pagina Precedente"
+        lore:
+          - "Clicca per andare alla pagina precedente"
+    items-per-page: 7
+
+
+
+stats:
+  title: "Stats"
+  size: 3
+  static:
+    '1':
+      material: BLACK_STAINED_GLASS_PANE
+      name: ""
+      lore:
+        - ""
+      slot:
+        row: 0
+        column: 0
+    '2':
+      material: BLACK_STAINED_GLASS_PANE
+      name: ""
+      lore:
+        - ""
+      slot:
+        row: 0
+        column: 1
+  items:
+    stats:
+      material: STONE
+      name: "Parkour: %parkour%"
+      lore:
+        - "Tempo: %time%"
+        - "Posizione: %position%"
+  pagination:
+    start:
+      row: 1
+      column: 1
+    page:
+      next:
+        material: ARROW
+        name: "Prossima Pagina"
+        lore:
+          - "Clicca per andare alla prossima pagina"
+      previous:
+        material: ARROW
+        name: "Pagina Precedente"
+        lore:
+          - "Clicca per andare alla pagina precedente"
+    items-per-page: 7

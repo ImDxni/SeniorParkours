@@ -218,6 +218,16 @@ public class DatabaseManager {
         });
     }
 
+    public CompletableFuture<RPlayer> getPlayerInPosition(String parkour, int position){
+        return getTop(parkour,position).thenApply(result -> {
+            if(position >= result.size()){
+                return null;
+            }
+
+            return result.get(result.size()-1);
+        });
+    }
+
     public CompletableFuture<Integer> getPosition(Player player, String parkour){
         return getPosition(player.getUniqueId(),parkour);
     }

@@ -2,7 +2,9 @@ package it.dani.seniorparkour.commands.subcommands.top;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class DelTopSubcommand extends Subcommand {
     public DelTopSubcommand(SeniorParkour plugin) {
@@ -21,6 +23,17 @@ public class DelTopSubcommand extends Subcommand {
 
     @Override
     public void dispatch(CommandSender sender, String[] args) {
+        if(args.length < 1){
+            return;
+        }
 
+        if(sender instanceof Player player) {
+            String name = args[0];
+
+            ParkourService service = getPlugin().getParkourService();
+            service.getParkourByName(name).ifPresentOrElse(
+                    service::deleteTop, () -> player.sendMessage("PARKOUR NON TROVATO"));
+
+        }
     }
 }

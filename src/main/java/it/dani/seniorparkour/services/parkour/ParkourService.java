@@ -6,6 +6,9 @@ import it.dani.seniorparkour.configuration.ConfigManager;
 import it.dani.seniorparkour.configuration.ConfigType;
 import it.dani.seniorparkour.database.DatabaseManager;
 import it.dani.seniorparkour.database.entity.RPlayer;
+import it.dani.seniorparkour.services.holograms.HologramService;
+import it.dani.seniorparkour.services.holograms.HologramType;
+import it.dani.seniorparkour.services.holograms.object.Hologram;
 import it.dani.seniorparkour.services.parkour.object.ParkourPlayer;
 import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
 import lombok.Getter;
@@ -23,6 +26,7 @@ import java.util.*;
 public class ParkourService implements ConfigLoader {
     private final ScoreboardManager scoreboardManager;
     private final DatabaseManager databaseManager;
+    private final HologramService hologramService;
 
     @Getter
     private final Set<Parkour> parkours = new HashSet<>();
@@ -35,6 +39,7 @@ public class ParkourService implements ConfigLoader {
         YamlConfiguration config = plugin.getConfigManager().getConfig(ConfigType.MAIN_CONFIG);
         scoreboardManager = plugin.getScoreboardManager();
         databaseManager = plugin.getDatabaseManager();
+        hologramService = plugin.getHologramService();
 
         startMaterial = Material.valueOf(config.getString("blocks.start"));
         endMaterial = Material.valueOf(config.getString("blocks.end"));
@@ -98,18 +103,27 @@ public class ParkourService implements ConfigLoader {
     }
 
     public void createParkour(String name, Block block) {
-        parkours.add(new Parkour(name, block.getLocation()));
+        Parkour parkour = new Parkour(name,block.getLocation());
+        parkours.add(parkour);
 
         setPointBlock(block, startMaterial);
+
+        hologramService.createHologram(block.getLocation(), HologramType.PARKOUR_START,parkour);
     }
 
     public void deleteParkour(Parkour parkour){
         parkours.remove(parkour);
+
         setPointBlock(parkour.getStart().getBlock(), Material.AIR);
+        hologramService.getByLocation(parkour.getStart()).ifPresent(Hologram::destroy);
+
         setPointBlock(parkour.getEnd().getBlock(), Material.AIR);
+        hologramService.getByLocation(parkour.getEnd()).ifPresent(Hologram::destroy);
 
         for (Location checkPoint : parkour.getCheckPoints()) {
             setPointBlock(checkPoint.getBlock(),Material.AIR);
+
+            hologramService.getByLocation(checkPoint).ifPresent(Hologram::destroy);
         }
 
         databaseManager.deleteStats(parkour.getName());
@@ -118,16 +132,22 @@ public class ParkourService implements ConfigLoader {
     public void addEndPoint(Parkour parkour, Block block) {
         if (parkour.getEnd() != null) {
             parkour.getEnd().getBlock().setType(Material.AIR);
+
+
+            hologramService.getByLocation(parkour.getEnd()).ifPresent(Hologram::destroy);
         }
 
         parkour.setEnd(block.getLocation());
+
+        hologramService.createHologram(block.getLocation(), HologramType.PARKOUR_END,parkour);
 
         setPointBlock(block, endMaterial);
     }
 
     public void addCheckPoint(Parkour parkour, Block block) {
-        parkour.setEnd(block.getLocation());
+        parkour.getCheckPoints().add(block.getLocation());
 
+        hologramService.createHologram(block.getLocation(), HologramType.PARKOUR_CHECKPOINT,parkour);
         setPointBlock(block, checkPointMaterial);
     }
 
@@ -137,7 +157,20 @@ public class ParkourService implements ConfigLoader {
             Location loc = parkour.getCheckPoints().remove(index);
 
             setPointBlock(loc.getBlock(), Material.AIR);
+
+            hologramService.getByLocation(loc).ifPresent(Hologram::destroy);
         }
+    }
+
+    public void createTop(Parkour parkour, Location location){
+        parkour.setTopLocation(location);
+
+        hologramService.createHologram(location,HologramType.PARKOUR_TOP,parkour);
+    }
+
+    public void deleteTop(Parkour parkour){
+        hologramService.getByLocation(parkour.getTopLocation()).ifPresent(Hologram::destroy);
+        parkour.setTopLocation(null);
     }
 
 
@@ -152,7 +185,7 @@ public class ParkourService implements ConfigLoader {
         }
 
         for (String key : parkourSection.getKeys(false)) {
-            Location start, end;
+            Location start, end,top;
 
             ConfigurationSection startSection = parkourSection.getConfigurationSection(key + ".start");
             start = getLocation(startSection);
@@ -163,8 +196,12 @@ public class ParkourService implements ConfigLoader {
 
             Parkour parkour = new Parkour(key, start);
 
+            hologramService.createHologram(start, HologramType.PARKOUR_START,parkour);
+
             if (end != null) {
                 parkour.setEnd(end);
+
+                hologramService.createHologram(end, HologramType.PARKOUR_END,parkour);
             }
 
             ConfigurationSection checkPoints = parkourSection.getConfigurationSection(key + ".checkpoints");
@@ -172,9 +209,20 @@ public class ParkourService implements ConfigLoader {
             if (checkPoints != null) {
 
                 for (String pointKey : checkPoints.getKeys(false)) {
-                    parkour.addCheckPoint(getLocation(checkPoints.getConfigurationSection(pointKey)));
+                    Location loc = getLocation(checkPoints.getConfigurationSection(pointKey));
+                    parkour.addCheckPoint(loc);
+
+                    hologramService.createHologram(loc, HologramType.PARKOUR_CHECKPOINT,parkour);
                 }
 
+            }
+
+            ConfigurationSection topSection = parkourSection.getConfigurationSection(key + ".top");
+
+            top = getLocation(topSection);
+
+            if(top != null){
+                createTop(parkour,top);
             }
         }
     }
@@ -207,8 +255,12 @@ public class ParkourService implements ConfigLoader {
                     i++;
                 }
             }
-        }
 
+            if(parkour.getTopLocation() != null){
+                ConfigurationSection topSection = parkourSection.createSection(name + ".top");
+                serializeLocation(topSection, parkour.getTopLocation());
+            }
+        }
 
     }
 
@@ -230,8 +282,8 @@ public class ParkourService implements ConfigLoader {
 
     private void serializeLocation(ConfigurationSection section, Location loc) {
         section.set("world", loc.getWorld().getName());
-        section.set("x", loc.getBlockX());
-        section.set("y", loc.getBlockY());
-        section.set("z", loc.getBlockZ());
+        section.set("x", loc.getX());
+        section.set("y", loc.getY());
+        section.set("z", loc.getZ());
     }
 }

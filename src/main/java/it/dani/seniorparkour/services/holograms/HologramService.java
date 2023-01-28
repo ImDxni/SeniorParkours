@@ -1,27 +1,27 @@
 package it.dani.seniorparkour.services.holograms;
 
 import it.dani.seniorparkour.SeniorParkour;
-import it.dani.seniorparkour.configuration.ConfigLoader;
-import it.dani.seniorparkour.configuration.ConfigManager;
+import it.dani.seniorparkour.configuration.ConfigType;
 import it.dani.seniorparkour.database.entity.RPlayer;
 import it.dani.seniorparkour.nms.HologramAdapter;
 import it.dani.seniorparkour.services.holograms.object.Hologram;
 import it.dani.seniorparkour.services.parkour.Parkour;
 import it.dani.seniorparkour.utils.Utils;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.server.v1_16_R3.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 
 @RequiredArgsConstructor
-public class HologramService implements ConfigLoader {
+public class HologramService {
     @Setter
     private HologramAdapter adapter;
 
@@ -33,8 +33,10 @@ public class HologramService implements ConfigLoader {
     public void createHologram(Location loc, HologramType type, Parkour parkour){
         switch (type) {
             case PARKOUR_END, PARKOUR_CHECKPOINT, PARKOUR_START -> {
-                List<String> lines = new ArrayList<>();
-                createStaticHologram(loc, lines);
+                YamlConfiguration config = plugin.getConfigManager().getConfig(ConfigType.MAIN_CONFIG);
+                List<String> lines = Utils.color(config.getStringList(type.getPath()));
+                int height = config.getInt("holograms.height");
+                createStaticHologram(loc, height,lines);
             }
 
             case PARKOUR_TOP -> createTopHologram(loc,parkour);
@@ -42,8 +44,8 @@ public class HologramService implements ConfigLoader {
     }
 
 
-    private void createStaticHologram(Location loc, List<String> lines){
-        Hologram hologram = new Hologram(loc);
+    private void createStaticHologram(Location loc, int height,List<String> lines){
+        Hologram hologram = new Hologram(loc,height);
 
         lines.forEach(hologram::addLine);
 
@@ -51,7 +53,7 @@ public class HologramService implements ConfigLoader {
     }
 
     private void createTopHologram(Location loc, Parkour parkour){
-        Hologram hologram = new Hologram(loc);
+        Hologram hologram = new Hologram(loc,0);
 
         hologram.addLine("PARKOUR " + parkour.getName());
 
@@ -69,25 +71,51 @@ public class HologramService implements ConfigLoader {
             });
         });
 
-        plugin.getDatabaseManager().getTop(parkour.getName(), 3).thenAccept(result -> {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                for (RPlayer rPlayer : result) {
-                     hologram.addLine("1. " + rPlayer.username() + " - " + Utils.convertMillis(rPlayer.time()));
-                }
-            });
+       hologram.addLine("Top 1", armorStand ->{
+           try {
+               RPlayer player = plugin.getDatabaseManager().getPlayerInPosition(parkour.getName(), 1).get();
+               String line = player == null ? "N/A" : "1. " + player.username() + " - " + Utils.convertMillis(player.time());
+
+               Bukkit.getScheduler().runTask(plugin, () -> armorStand.setCustomName(line));
+           } catch (InterruptedException | ExecutionException e) {
+               throw new RuntimeException(e);
+           }
+       });
+
+        hologram.addLine("Top 2", armorStand ->{
+            try {
+                RPlayer player = plugin.getDatabaseManager().getPlayerInPosition(parkour.getName(), 2).get();
+                String line = player == null ? "N/A" : "2. " + player.username() + " - " + Utils.convertMillis(player.time());
+
+                Bukkit.getScheduler().runTask(plugin, () -> armorStand.setCustomName(line));
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
         });
+
+        hologram.addLine("Top 3", armorStand ->{
+            try {
+                RPlayer player = plugin.getDatabaseManager().getPlayerInPosition(parkour.getName(), 3).get();
+                String line = player == null ? "N/A" : "3. " + player.username() + " - " + Utils.convertMillis(player.time());
+
+                Bukkit.getScheduler().runTask(plugin, () -> armorStand.setCustomName(line));
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin,hologram.updateTask(),0,1200);
 
     }
 
-    @Override
-    public void load(ConfigManager manager) {
-        //TODO LOADING
+    public Optional<Hologram> getByLocation(Location startLocation){
+        return holograms.stream()
+                .filter(hologram -> hologram.getStartLocation().equals(startLocation))
+                .findFirst();
     }
 
-    @Override
-    public void unload(ConfigManager manager) {
-        ConfigLoader.super.unload(manager);
+    public void destroy(){
+        holograms.forEach(Hologram::destroy);
     }
 }

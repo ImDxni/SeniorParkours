@@ -2,7 +2,10 @@ package it.dani.seniorparkour.commands.subcommands.top;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.inventories.impl.info.InfoInventory;
+import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class SetTopSubcommand extends Subcommand {
     public SetTopSubcommand(SeniorParkour plugin) {
@@ -21,6 +24,18 @@ public class SetTopSubcommand extends Subcommand {
 
     @Override
     public void dispatch(CommandSender sender, String[] args) {
+        if(args.length < 1){
+            return;
+        }
 
+        if(sender instanceof Player player) {
+            String name = args[0];
+
+            ParkourService service = getPlugin().getParkourService();
+            service.getParkourByName(name).ifPresentOrElse(
+                    (parkour) -> service.createTop(parkour,player.getLocation()),
+                    () -> player.sendMessage("PARKOUR NON TROVATO"));
+
+        }
     }
 }

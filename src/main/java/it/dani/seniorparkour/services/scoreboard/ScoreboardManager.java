@@ -3,6 +3,7 @@ package it.dani.seniorparkour.services.scoreboard;
 import it.dani.seniorparkour.configuration.ConfigLoader;
 import it.dani.seniorparkour.configuration.ConfigManager;
 import it.dani.seniorparkour.configuration.ConfigType;
+import it.dani.seniorparkour.utils.Utils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -52,8 +53,8 @@ public class ScoreboardManager implements ConfigLoader,Runnable {
     @Override
     public void load(ConfigManager manager) {
         YamlConfiguration config = manager.getConfig(ConfigType.MAIN_CONFIG);
-        header = config.getString("scoreboard.header");
-        lines.addAll(config.getStringList("scoreboard.lines"));
+        header = Utils.color(config.getString("scoreboard.header"));
+        lines.addAll(Utils.color(config.getStringList("scoreboard.lines")));
     }
 
 }

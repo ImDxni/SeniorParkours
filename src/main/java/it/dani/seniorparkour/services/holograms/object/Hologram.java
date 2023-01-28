@@ -1,5 +1,6 @@
 package it.dani.seniorparkour.services.holograms.object;
 
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -10,28 +11,31 @@ import java.util.function.Consumer;
 
 
 public class Hologram {
-    private Location location;
+    @Getter
+    private final Location startLocation;
+    private Location linePosition;
 
     private final Map<ArmorStand, Consumer<ArmorStand>> lines = new HashMap<>();
 
-    public Hologram(Location location){
-        this.location = location;
+    public Hologram(Location location,int height){
+        this.startLocation = location;
+        linePosition = location.clone().add(0,height,0);
     }
 
     public void addLine(String line){
-        lines.put(createLine(location,line),(entity) -> {});
+        lines.put(createLine(linePosition,line),(entity) -> {});
 
-        location = location.subtract(0,0.4,0);
+        linePosition = linePosition.subtract(0,0.4,0);
     }
 
     public void addLine(String initialLine, Consumer<ArmorStand> updater){
-        ArmorStand stand = createLine(location,initialLine);
+        ArmorStand stand = createLine(linePosition,initialLine);
 
         lines.put(stand,updater);
 
 
 
-        location = location.subtract(0,0.4,0);
+        linePosition = linePosition.subtract(0,0.4,0);
     }
 
     public Runnable updateTask(){

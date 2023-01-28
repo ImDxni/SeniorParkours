@@ -1,0 +1,22 @@
+top:
+  limit: 20
+
+scoreboard:
+  header: "PARKOUR"
+  lines:
+    - "Name: %parkour_name%"
+    - "Current Time: %parkour_time%"
+    - "Position: %parkour_position%"
+    - "Record time: %parkour_record%"
+
+holograms:
+  height: 5
+  start:
+    - "OLOGRAMMA INIZIO"
+    - "PASSA DA QUI PER INIZIARE IL PARKOUR"
+  checkpoint:
+    - "OLOGRAMMA CHECKPOINT"
+    - "QUESTO E' UN CHECKPOINT"
+  end:
+    - "OLOGRAMMA FINE"
+    - "PASSA DA QUI PER FINIRE IL PARKOUR"

@@ -38,7 +38,7 @@ public class TopInventory extends InventoryBuilder {
         for (int i = 0; i < records.size(); i++) {
             RPlayer record = records.get(i);
 
-            configItem.addPlaceHolder("%parkour%",record.parkour())
+            configItem.addPlaceHolder("%player%",record.username())
                     .addPlaceHolder("%time%", Utils.convertMillis(record.time()))
                     .addPlaceHolder("%position%",i+1);
 

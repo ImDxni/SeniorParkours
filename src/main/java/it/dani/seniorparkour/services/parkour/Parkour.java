@@ -17,6 +17,9 @@ public class Parkour {
     private final List<Location> checkPoints = new ArrayList<>();
 
     @Setter
+    private Location topLocation;
+
+    @Setter
     private Location end;
 
 

@@ -7,7 +7,10 @@ import it.dani.seniorparkour.configuration.ConfigType;
 import it.dani.seniorparkour.database.DatabaseManager;
 import it.dani.seniorparkour.listeners.FlyListener;
 import it.dani.seniorparkour.listeners.MoveListener;
+import it.dani.seniorparkour.nms.HologramAdapter;
+import it.dani.seniorparkour.nms.v1_16_R3.HologramAdapterImpl;
 import it.dani.seniorparkour.placeholders.ParkourExpansion;
+import it.dani.seniorparkour.services.holograms.HologramService;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
 import lombok.Getter;
@@ -16,6 +19,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SeniorParkour extends JavaPlugin {
 
@@ -31,6 +36,9 @@ public final class SeniorParkour extends JavaPlugin {
     @Getter
     private ParkourService parkourService;
 
+    @Getter
+    private HologramService hologramService;
+
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
@@ -38,8 +46,18 @@ public final class SeniorParkour extends JavaPlugin {
 
         databaseManager = new DatabaseManager(this);
 
+        HologramAdapter adapter = detectCurrentVersion();
+
+        if(adapter == null){
+            Bukkit.getLogger().info("This version is not supported, disabling plugin");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         scoreboardManager = new ScoreboardManager();
+        hologramService = new HologramService(this);
+        hologramService.setAdapter(adapter);
+
         parkourService = new ParkourService(this);
 
         loadServices(parkourService,scoreboardManager);
@@ -57,13 +75,14 @@ public final class SeniorParkour extends JavaPlugin {
 
         getCommand("parkour").setExecutor(new ParkourCommand(this));
 
-        //TODO MESSAGGI CONFIGURABILI - OLOGRAMMI
+        //TODO MESSAGGI CONFIGURABILI
     }
 
     @Override
     public void onDisable() {
-
         unloadServices();
+
+        hologramService.destroy();
     }
 
     private void loadServices(ConfigLoader... loaders){
@@ -77,4 +96,23 @@ public final class SeniorParkour extends JavaPlugin {
     private void unloadServices(){
         loadedService.forEach(loader -> loader.unload(configManager));
     }
+
+    private HologramAdapter detectCurrentVersion() {
+        Matcher matcher = Pattern.compile("v\\d+_\\d+_R\\d+").matcher(Bukkit.getServer().getClass().getPackage().getName());
+        if (!matcher.find()) {
+            return null;
+        }
+
+        String nmsVersionName = matcher.group();
+
+        switch(nmsVersionName){
+            case "v1_16_R3" -> {
+                return new HologramAdapterImpl();
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
 }
