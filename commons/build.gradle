@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group 'it.dani.seniorparkours'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name = 'nms-repo'
+        url = 'https://repo.codemc.io/repository/nms/'
+    }
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = 17
+    targetCompatibility = 17
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}

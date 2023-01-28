@@ -33,7 +33,7 @@ public class DeleteSubcommand extends Subcommand {
 
             ParkourService service = getPlugin().getParkourService();
             service.getParkourByName(name).ifPresentOrElse((parkour) -> {
-                if(args.length < 2) {
+                if(args.length == 1) {
                     service.deleteParkour(parkour);
                     sender.sendMessage("PARKOUR ELIMINATO");
                 } else {

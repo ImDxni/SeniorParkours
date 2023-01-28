@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
@@ -31,12 +32,13 @@ public class ScoreboardManager implements ConfigLoader,Runnable {
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
 
+            int i = lines.size();
             for (String line : PlaceholderAPI.setPlaceholders(player,lines)) {
-                obj.getScore(line);
+                Score score = obj.getScore(line);
+                score.setScore(i--);
             }
 
             player.setScoreboard(scoreboard);
-
         }
     }
 
@@ -45,7 +47,11 @@ public class ScoreboardManager implements ConfigLoader,Runnable {
         if(toggle){
             activePlayers.put(player,player.getScoreboard());
         } else {
-            player.setScoreboard(activePlayers.remove(player));
+            Scoreboard board = activePlayers.remove(player);
+
+            if(board != null){
+                player.setScoreboard(board);
+            }
         }
     }
 

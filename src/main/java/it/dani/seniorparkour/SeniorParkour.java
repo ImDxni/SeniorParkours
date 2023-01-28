@@ -7,12 +7,13 @@ import it.dani.seniorparkour.configuration.ConfigType;
 import it.dani.seniorparkour.database.DatabaseManager;
 import it.dani.seniorparkour.listeners.FlyListener;
 import it.dani.seniorparkour.listeners.MoveListener;
-import it.dani.seniorparkour.nms.HologramAdapter;
-import it.dani.seniorparkour.nms.v1_16_R3.HologramAdapterImpl;
+import it.dani.seniorparkour.listeners.QuitListener;
 import it.dani.seniorparkour.placeholders.ParkourExpansion;
 import it.dani.seniorparkour.services.holograms.HologramService;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
+import it.dani.seniorparkour.commons.HologramAdapter;
+import it.dani.seniorparkour.nms.v1_16_R3.HologramAdapterImpl;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,13 +70,14 @@ public final class SeniorParkour extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new FlyListener(parkourService),this);
         Bukkit.getPluginManager().registerEvents(new MoveListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new QuitListener(parkourService),this);
 
 
         Bukkit.getScheduler().runTaskTimer(this,scoreboardManager,0,5);
 
         getCommand("parkour").setExecutor(new ParkourCommand(this));
 
-        //TODO MESSAGGI CONFIGURABILI
+        //TODO MESSAGGI CONFIGURABILI - TOP NON FUNZIONA
     }
 
     @Override
@@ -106,8 +108,12 @@ public final class SeniorParkour extends JavaPlugin {
         String nmsVersionName = matcher.group();
 
         switch(nmsVersionName){
+
             case "v1_16_R3" -> {
                 return new HologramAdapterImpl();
+            }
+            case "v1_19_R1" -> {
+                return new it.dani.seniorparkour.nms.v1_19_R1.HologramAdapterImpl();
             }
             default -> {
                 return null;

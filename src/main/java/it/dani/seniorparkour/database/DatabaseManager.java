@@ -32,7 +32,7 @@ public class DatabaseManager {
     }
 
     public void createTables() {
-        String sql = "CREATE TABLE IF NOT EXISTS parkour(uuid VARCHAR(36) PRIMARY KEY,username VARCHAR(16), parkour VARCHAR(20), time BIGINT);";
+        String sql = "CREATE TABLE IF NOT EXISTS parkour(uuid VARCHAR(36),username VARCHAR(16), parkour VARCHAR(20), time BIGINT,PRIMARY KEY(uuid,parkour));";
 
         try (Connection connection = connectionManager.getConnection();
              Statement statement = connection.createStatement()) {
@@ -238,8 +238,11 @@ public class DatabaseManager {
             try (Connection connection = connectionManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {
 
-                statement.setString(1, uuid.toString());
-                statement.setString(2, parkour);
+                statement.setString(1,parkour);
+                statement.setString(2, uuid.toString());
+                statement.setString(3, parkour);
+
+
 
                 ResultSet result = statement.executeQuery();
 

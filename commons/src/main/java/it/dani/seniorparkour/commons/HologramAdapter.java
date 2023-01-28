@@ -1,7 +1,6 @@
-package it.dani.seniorparkour.nms;
+package it.dani.seniorparkour.commons;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 

@@ -1,1 +1,5 @@
 rootProject.name = 'SeniorParkours'
+include 'commons'
+include 'v1_16_R3'
+include 'v1_19_R1'
+

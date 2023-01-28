@@ -1,7 +1,8 @@
 package it.dani.seniorparkour.nms.v1_16_R3;
 
-import it.dani.seniorparkour.nms.HologramAdapter;
-import net.minecraft.server.v1_16_R3.*;
+import it.dani.seniorparkour.commons.HologramAdapter;
+import net.minecraft.server.v1_16_R3.ChatComponentText;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;

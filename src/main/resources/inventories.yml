@@ -79,11 +79,17 @@ info:
           name: "Prossima Pagina"
           lore:
             - "Clicca per andare alla prossima pagina"
+          slot:
+            row: 2
+            column: 5
         previous:
           material: ARROW
           name: "Pagina Precedente"
           lore:
             - "Clicca per andare alla pagina precedente"
+          slot:
+            row: 2
+            column: 3
       items-per-page: 7
 
 
@@ -124,11 +130,17 @@ top:
         name: "Prossima Pagina"
         lore:
           - "Clicca per andare alla prossima pagina"
+        slot:
+          row: 2
+          column: 5
       previous:
         material: ARROW
         name: "Pagina Precedente"
         lore:
           - "Clicca per andare alla pagina precedente"
+        slot:
+          row: 2
+          column: 3
     items-per-page: 7
 
 
@@ -170,9 +182,15 @@ stats:
         name: "Prossima Pagina"
         lore:
           - "Clicca per andare alla prossima pagina"
+        slot:
+          row: 2
+          column: 5
       previous:
         material: ARROW
         name: "Pagina Precedente"
         lore:
           - "Clicca per andare alla pagina precedente"
+        slot:
+          row: 2
+          column: 3
     items-per-page: 7

@@ -12,7 +12,7 @@ public class ConnectionManager {
     private final int port;
 
     public Connection getConnection() throws SQLException {
-        String url = "jdbc:mysql://$1%s:$2%d/$3%s?";
+        String url = "jdbc:mysql://%s:%d/%s?";
         url = String.format(url,hostname,port,database);
 
         return DriverManager.getConnection(url,user,password);

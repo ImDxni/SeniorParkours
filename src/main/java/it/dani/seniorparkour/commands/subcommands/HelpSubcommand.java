@@ -21,7 +21,7 @@ public class HelpSubcommand extends Subcommand {
 
     @Override
     public String getPermission() {
-        return null;
+        return "";
     }
 
 }

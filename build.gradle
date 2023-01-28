@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'it.dani'
@@ -27,6 +28,10 @@ repositories {
 }
 
 dependencies {
+    implementation project(path: ':commons')
+    implementation project(path: ':v1_16_R3')
+    implementation project(path: ':v1_19_R1')
+
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.2'
     compileOnly 'fr.minuskube.inv:smart-invs:1.2.7'
@@ -35,17 +40,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
-
-
-    //NMS
-    compileOnly 'org.spigotmc:spigot:1.16.4-R0.1-SNAPSHOT'
 }
 
-def targetJavaVersion = 16
+def targetJavaVersion = 17
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = 16
-    targetCompatibility = 16
+    sourceCompatibility = 17
+    targetCompatibility = 17
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }

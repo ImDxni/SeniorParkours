@@ -42,7 +42,7 @@ public class ParkourCommand implements CommandExecutor, TabExecutor {
 
         Optional<Subcommand> optionalSubcommand = getSubcommand(args[0]);
         if (optionalSubcommand.isPresent()) {
-            String[] param = Arrays.copyOfRange(args, 1, args.length + 1);
+            String[] param = Arrays.copyOfRange(args, 1, args.length);
             Subcommand subcommand = optionalSubcommand.get();
             if(sender.hasPermission(subcommand.getPermission())) {
                 subcommand.dispatch(sender, param);
@@ -65,7 +65,7 @@ public class ParkourCommand implements CommandExecutor, TabExecutor {
         } else {
             Optional<Subcommand> optionalSubcommand = getSubcommand(args[0]);
             if (optionalSubcommand.isPresent()) {
-                String[] param = Arrays.copyOfRange(args, 1, args.length + 1);
+                String[] param = Arrays.copyOfRange(args, 1, args.length);
                 Subcommand subcommand = optionalSubcommand.get();
                 if(sender.hasPermission(subcommand.getPermission())) {
                     List<String> tab = optionalSubcommand.get().onTabComplete(param);

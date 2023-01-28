@@ -3,13 +3,12 @@ package it.dani.seniorparkour.services.holograms;
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.configuration.ConfigType;
 import it.dani.seniorparkour.database.entity.RPlayer;
-import it.dani.seniorparkour.nms.HologramAdapter;
 import it.dani.seniorparkour.services.holograms.object.Hologram;
 import it.dani.seniorparkour.services.parkour.Parkour;
 import it.dani.seniorparkour.utils.Utils;
+import it.dani.seniorparkour.commons.HologramAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.minecraft.server.v1_16_R3.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -58,7 +57,7 @@ public class HologramService {
         hologram.addLine("PARKOUR " + parkour.getName());
 
         hologram.addLine("", (armorStand) -> {
-            int entityID = ((EntityLiving)armorStand).getId();
+            int entityID = armorStand.getEntityId();
             adapter.setEntityID(entityID);
             adapter.sendHologram((player) -> {
                 try {

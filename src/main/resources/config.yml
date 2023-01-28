@@ -1,3 +1,15 @@
+database:
+  hostname:
+  user:
+  password:
+  name:
+
+
+blocks:
+  start: GOLDEN_PRESSURE_PLATE
+  checkpoint: IRON_PRESSURE_PLATE
+  end: STONE_PRESSURE_PLATE
+
 top:
   limit: 20
 

@@ -41,14 +41,13 @@ public class MoveListener implements Listener {
                 }
             } else {
                 Location endPoint = parkourPlayer.getParkour().getEnd();
+                if (endPoint != null) {
 
-                if (player.getLocation().getBlock().equals(endPoint.getBlock())) {
-                    service.endParkour(player);
 
-                    long time = System.currentTimeMillis() - parkourPlayer.getStartTime();
-                    databaseManager.insertPlayer(new RPlayer(player.getUniqueId(),player.getName(),parkourPlayer.getParkour().getName(),time));
-
-                    player.sendMessage("PARKOUR FINITO");
+                    if (player.getLocation().getBlock().equals(endPoint.getBlock())) {
+                        service.endParkour(player);
+                        player.sendMessage("PARKOUR FINITO");
+                    }
                 }
             }
 

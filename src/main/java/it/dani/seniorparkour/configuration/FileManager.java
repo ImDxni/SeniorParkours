@@ -23,6 +23,9 @@ public class FileManager {
         if(file.exists()) {
             config = YamlConfiguration.loadConfiguration(file);
         }
+
+        createFolder();
+        saveDefault();
     }
 
     public File getFolder() {
@@ -33,7 +36,6 @@ public class FileManager {
         File folder = getFolder();
         if (!folder.exists()) folder.mkdir();
 
-        if(!file.exists()) file.mkdirs();
     }
 
     public void saveDefault() {

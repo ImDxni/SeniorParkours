@@ -20,6 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -80,16 +81,19 @@ public class ParkourService implements ConfigLoader {
                                 parkourPlayer.setRecordTime(time);
 
                                 activePlayers.add(parkourPlayer);
+
                             });
         });
 
 
         scoreboardManager.setScoreboard(player, true);
+
     }
 
     public void endParkour(Player player) {
         Iterator<ParkourPlayer> iterator = activePlayers.iterator();
 
+        scoreboardManager.setScoreboard(player,false);
         while (iterator.hasNext()) {
             ParkourPlayer parkourPlayer = iterator.next();
 
@@ -100,6 +104,12 @@ public class ParkourService implements ConfigLoader {
                 return;
             }
         }
+    }
+
+    public void removeActivePlayer(Player player){
+        activePlayers.removeIf(parkourPlayer -> player.getUniqueId().equals(parkourPlayer.getUuid()));
+
+        scoreboardManager.setScoreboard(player,false);
     }
 
     public void createParkour(String name, Block block) {
@@ -127,6 +137,19 @@ public class ParkourService implements ConfigLoader {
         }
 
         databaseManager.deleteStats(parkour.getName());
+
+        Iterator<ParkourPlayer> iterator = activePlayers.iterator();
+        while (iterator.hasNext()) {
+            ParkourPlayer parkourPlayer = iterator.next();
+
+            if (parkourPlayer.getParkour().equals(parkour)) {
+                iterator.remove();
+
+                scoreboardManager.setScoreboard(Bukkit.getPlayer(parkourPlayer.getUuid()),false);
+                return;
+            }
+        }
+
     }
 
     public void addEndPoint(Parkour parkour, Block block) {
@@ -153,7 +176,7 @@ public class ParkourService implements ConfigLoader {
 
 
     public void removeCheckPoint(Parkour parkour, int index) {
-        if(index > 0 && index < parkour.getCheckPoints().size()) {
+        if(index >= 0 && index < parkour.getCheckPoints().size()) {
             Location loc = parkour.getCheckPoints().remove(index);
 
             setPointBlock(loc.getBlock(), Material.AIR);
@@ -262,6 +285,11 @@ public class ParkourService implements ConfigLoader {
             }
         }
 
+        try {
+            config.save(manager.getFile(ConfigType.PARKOUR));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void setPointBlock(Block block, Material type) {

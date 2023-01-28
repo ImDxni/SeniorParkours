@@ -32,13 +32,13 @@ public class ParkourPlayer {
     }
 
     public Location getNextCheckpoint(){
-        int index = checkpoint + 1;
+        int index = checkpoint;
 
-        if(parkour.getCheckPoints().size() == index){
+        if(parkour.getCheckPoints().size() <= index){
             return null;
         }
 
-        return parkour.getCheckPoints().get(checkpoint + 1);
+        return parkour.getCheckPoints().get(checkpoint);
     }
 
     public long getParkourTime(){

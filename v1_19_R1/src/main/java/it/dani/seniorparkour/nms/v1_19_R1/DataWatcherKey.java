@@ -1,11 +1,11 @@
-package it.dani.seniorparkour.nms.v1_16_R3;
+package it.dani.seniorparkour.nms.v1_19_R1;
+
 
 
 import io.netty.handler.codec.EncoderException;
-import net.minecraft.server.v1_16_R3.DataWatcherRegistry;
-import net.minecraft.server.v1_16_R3.DataWatcherSerializer;
-import net.minecraft.server.v1_16_R3.IChatBaseComponent;
-import net.minecraft.server.v1_16_R3.ItemStack;
+import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.syncher.DataWatcherRegistry;
+import net.minecraft.network.syncher.DataWatcherSerializer;
 
 import java.util.Optional;
 

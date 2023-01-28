@@ -40,8 +40,13 @@ public class TeleportSubcommand extends Subcommand {
                 } else {
                     int checkpoint;
                     if(NumberUtils.isNumber(args[1])){
-                        checkpoint = Integer.parseInt(args[1]);
-                        loc = parkour.getCheckPoints().get(checkpoint+1);
+                        checkpoint = Integer.parseInt(args[1]) -1;
+                        if(checkpoint >= 0 && checkpoint < parkour.getCheckPoints().size()) {
+                            loc = parkour.getCheckPoints().get(checkpoint);
+                        } else {
+                            sender.sendMessage("Checkpoint inesistente");
+                            return;
+                        }
                     } else {
                         sender.sendMessage("FORMATO NON VALIDO");
                         return;
