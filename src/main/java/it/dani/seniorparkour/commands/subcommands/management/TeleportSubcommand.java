@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.management;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Location;
@@ -44,17 +45,17 @@ public class TeleportSubcommand extends Subcommand {
                         if(checkpoint >= 0 && checkpoint < parkour.getCheckPoints().size()) {
                             loc = parkour.getCheckPoints().get(checkpoint);
                         } else {
-                            sender.sendMessage("Checkpoint inesistente");
+                            sendMessage(sender, Messages.CHECKPOINT_NOT_FOUND);
                             return;
                         }
                     } else {
-                        sender.sendMessage("FORMATO NON VALIDO");
+                        sendMessage(sender,Messages.INVALID_FORMAT);
                         return;
                     }
                 }
 
                 player.teleport(loc);
-            },() -> sender.sendMessage("PARKOUR NON TROVATO"));
+            },() -> sendMessage(sender,Messages.PARKOUR_NOT_FOUND));
 
         }
     }

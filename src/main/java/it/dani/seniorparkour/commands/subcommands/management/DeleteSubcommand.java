@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.management;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.command.CommandSender;
@@ -35,21 +36,24 @@ public class DeleteSubcommand extends Subcommand {
             service.getParkourByName(name).ifPresentOrElse((parkour) -> {
                 if(args.length == 1) {
                     service.deleteParkour(parkour);
-                    sender.sendMessage("PARKOUR ELIMINATO");
+                    sendMessage(sender,Messages.PARKOUR_DELETED);
                 } else {
                     int checkpoint;
                     if(NumberUtils.isNumber(args[1])){
                         checkpoint = Integer.parseInt(args[1]);
                     } else {
-                        sender.sendMessage("FORMATO NON VALIDO");
+                        sendMessage(sender,Messages.INVALID_FORMAT);
                         return;
                     }
 
-                    service.removeCheckPoint(parkour,checkpoint-1);
-
-                    sender.sendMessage("CHECKPOINT RIMOSSO");
+                    if(checkpoint >= 0 && checkpoint < parkour.getCheckPoints().size()) {
+                        service.removeCheckPoint(parkour,checkpoint-1);
+                        sendMessage(sender,Messages.CHECKPOINT_REMOVED);
+                    } else {
+                        sendMessage(sender,Messages.CHECKPOINT_NOT_FOUND);
+                    }
                 }
-            },() -> sender.sendMessage("PARKOUR NON TROVATO"));
+            },() -> sendMessage(sender,Messages.PARKOUR_NOT_FOUND));
 
         }
     }

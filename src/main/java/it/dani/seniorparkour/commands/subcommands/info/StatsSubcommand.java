@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.info;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.inventories.impl.StatsInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -34,10 +35,16 @@ public class StatsSubcommand extends Subcommand {
         if (sender instanceof Player player) {
             String target = args[0];
 
-            getPlugin().getDatabaseManager().getStats(target).thenAccept((result) ->
-                    Bukkit.getScheduler().runTask(getPlugin(),
+            getPlugin().getDatabaseManager().getStats(target).thenAccept((result) ->{
+                if(result.isEmpty()) {
+                    sendMessage(sender,Messages.NO_STATS);
+                    return;
+                }
+
+                Bukkit.getScheduler().runTask(getPlugin(),
                             () -> new StatsInventory(getPlugin().getConfigManager(), result).getInventory()
-                                    .open(player)));
+                                    .open(player));
+            });
         }
     }
 

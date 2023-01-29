@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.top;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.inventories.impl.info.InfoInventory;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,7 @@ public class SetTopSubcommand extends Subcommand {
             ParkourService service = getPlugin().getParkourService();
             service.getParkourByName(name).ifPresentOrElse(
                     (parkour) -> service.createTop(parkour,player.getLocation()),
-                    () -> player.sendMessage("PARKOUR NON TROVATO"));
+                    () -> sendMessage(sender, Messages.PARKOUR_NOT_FOUND));
 
         }
     }

@@ -44,7 +44,8 @@ public class HologramService {
 
 
     private void createStaticHologram(Location loc, int height,List<String> lines){
-        Hologram hologram = new Hologram(loc,height);
+        Location centerLoc = loc.add(0.5,0,0.5);
+        Hologram hologram = new Hologram(centerLoc,height);
 
         lines.forEach(hologram::addLine);
 
@@ -53,56 +54,56 @@ public class HologramService {
 
     private void createTopHologram(Location loc, Parkour parkour){
         Hologram hologram = new Hologram(loc,0);
+        YamlConfiguration config = plugin.getConfigManager().getConfig(ConfigType.MAIN_CONFIG);
+        List<String> lines = Utils.color(config.getStringList(HologramType.PARKOUR_TOP.getPath()+".lines"));
 
-        hologram.addLine("PARKOUR " + parkour.getName());
+        for (String line : lines) {
+            if (line.startsWith("%top")) {
+                int index = Integer.parseInt(line.replace("%", "").split("_")[1]);
+                String format = Utils.color(config.getString(HologramType.PARKOUR_TOP.getPath() + ".format.top.result"));
+                String fallback = Utils.color(config.getString(HologramType.PARKOUR_TOP.getPath()+".format.top.fallback"));
 
-        hologram.addLine("", (armorStand) -> {
-            int entityID = armorStand.getEntityId();
-            adapter.setEntityID(entityID);
-            adapter.sendHologram((player) -> {
-                try {
-                    return plugin.getDatabaseManager().getTime(player, parkour.getName())
-                            .thenCombine(plugin.getDatabaseManager().getPosition(player, parkour.getName()),
-                                    (time, position) -> position +". " + Utils.convertMillis(time)).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        });
+                hologram.addLine("N/A", armorStand -> {
+                    try {
+                        RPlayer player = plugin.getDatabaseManager().getPlayerInPosition(parkour.getName(), index).get();
 
-       hologram.addLine("Top 1", armorStand ->{
-           try {
-               RPlayer player = plugin.getDatabaseManager().getPlayerInPosition(parkour.getName(), 1).get();
-               String line = player == null ? "N/A" : "1. " + player.username() + " - " + Utils.convertMillis(player.time());
+                        String result = player == null ? fallback : format.replace("%player%", player.username())
+                                .replace("%position%", String.valueOf(index))
+                                .replace("%time%", Utils.convertMillis(player.time()));
 
-               Bukkit.getScheduler().runTask(plugin, () -> armorStand.setCustomName(line));
-           } catch (InterruptedException | ExecutionException e) {
-               throw new RuntimeException(e);
-           }
-       });
+                        Bukkit.getScheduler().runTask(plugin, () -> armorStand.setCustomName(result));
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            } else if (line.contains("%personal%")) {
 
-        hologram.addLine("Top 2", armorStand ->{
-            try {
-                RPlayer player = plugin.getDatabaseManager().getPlayerInPosition(parkour.getName(), 2).get();
-                String line = player == null ? "N/A" : "2. " + player.username() + " - " + Utils.convertMillis(player.time());
+                String format = Utils.color(config.getString(HologramType.PARKOUR_TOP.getPath() + ".format.personal"));
 
-                Bukkit.getScheduler().runTask(plugin, () -> armorStand.setCustomName(line));
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+                hologram.addLine("", (armorStand) -> {
+                    int entityID = armorStand.getEntityId();
+                    adapter.setEntityID(entityID);
+                    adapter.sendHologram((player) -> {
+                        String personal;
+                        try {
+                            personal = plugin.getDatabaseManager().getTime(player, parkour.getName())
+                                    .thenCombine(plugin.getDatabaseManager().getPosition(player, parkour.getName()),
+                                            (time, position) -> format.replace("%position%", String.valueOf(position))
+                                                    .replace("%time%", Utils.convertMillis(time))
+                                                    .replace("%player%",player.getName())).get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        return line.replace("%personal%", personal);
+                    });
+                });
+            } else {
+                hologram.addLine(line.replace("%parkour%", parkour.getName()));
             }
-        });
+        }
 
-        hologram.addLine("Top 3", armorStand ->{
-            try {
-                RPlayer player = plugin.getDatabaseManager().getPlayerInPosition(parkour.getName(), 3).get();
-                String line = player == null ? "N/A" : "3. " + player.username() + " - " + Utils.convertMillis(player.time());
-
-                Bukkit.getScheduler().runTask(plugin, () -> armorStand.setCustomName(line));
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
+        holograms.add(hologram);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin,hologram.updateTask(),0,1200);
 
@@ -110,7 +111,7 @@ public class HologramService {
 
     public Optional<Hologram> getByLocation(Location startLocation){
         return holograms.stream()
-                .filter(hologram -> hologram.getStartLocation().equals(startLocation))
+                .filter(hologram -> hologram.getStartLocation().equals(startLocation) || hologram.getStartLocation().getBlock().equals(startLocation.getBlock()))
                 .findFirst();
     }
 

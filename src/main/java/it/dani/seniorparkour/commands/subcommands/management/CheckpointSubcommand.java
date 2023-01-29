@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.management;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,8 +34,8 @@ public class CheckpointSubcommand extends Subcommand {
             ParkourService service = getPlugin().getParkourService();
             service.getParkourByName(name).ifPresentOrElse((parkour) -> {
                 service.addCheckPoint(parkour,player.getLocation().getBlock());
-                sender.sendMessage("CHECKPOINT AGGIUNTO");
-            },() -> sender.sendMessage("PARKOUR NON TROVATO"));
+                sendMessage(sender,Messages.CHECKPOINT_ADDED);
+            },() -> sendMessage(sender,Messages.PARKOUR_NOT_FOUND));
 
         }
     }

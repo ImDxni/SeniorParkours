@@ -4,6 +4,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.SlotPos;
 import it.dani.seniorparkour.configuration.ConfigManager;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.inventories.InventoryBuilder;
 import it.dani.seniorparkour.inventories.InventoryType;
 import it.dani.seniorparkour.services.parkour.Parkour;
@@ -54,6 +55,9 @@ public class InfoInventory extends InventoryBuilder {
             ConfigItem item = ConfigItem.fromConfig(checkPointSection);
 
             contents.set(pos, ClickableItem.of(item.build(), (e) -> {
+                if(parkour.getCheckPoints().isEmpty()){
+                    player.sendMessage(Messages.NO_CHECKPOINT.getMessage(getManager()));
+                }
                 new CheckpointsInventory(getManager(),parkour).getInventory().open(player);
             }));
         }

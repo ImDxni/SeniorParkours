@@ -20,6 +20,7 @@ public class HologramAdapterImpl extends HologramAdapter {
             PacketByteBuffer buffer = PacketByteBuffer.get();
             buffer.writeVarInt(getEntityID());
             buffer.writeDataWatcherEntry(DataWatcherKey.CUSTOM_NAME, Optional.of(CraftChatMessage.fromString(message, false, true)[0]));
+            buffer.writeDataWatcherEntriesEnd();
 
             PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(buffer);
             sendPacket(player,packet);

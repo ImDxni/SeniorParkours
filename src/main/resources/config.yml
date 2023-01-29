@@ -32,3 +32,17 @@ holograms:
   end:
     - "OLOGRAMMA FINE"
     - "PASSA DA QUI PER FINIRE IL PARKOUR"
+  top:
+    format:
+      top:
+        result: "&b%position%. &c%player% - %time%"
+        fallback: "&cN/A"
+      personal: "&c%position%. %player% - %time%"
+    lines:
+      - "&cParkour %parkour%"
+      - "&cStatistica personale:"
+      - "&b%personal%"
+      - "&cClassifica Globale"
+      - "%top_1%"
+      - "%top_2%"
+      - "%top_3%"

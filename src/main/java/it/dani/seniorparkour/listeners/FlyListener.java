@@ -19,7 +19,7 @@ public class FlyListener implements Listener {
 
         if(e.isFlying()){
             service.getParkourPlayer(player).ifPresent(parkourPlayer -> {
-                service.endParkour(player);
+                service.removeActivePlayer(player);
 
                 player.teleport(parkourPlayer.getParkour().getStart());
             });

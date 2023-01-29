@@ -1,6 +1,7 @@
 package it.dani.seniorparkour.commands;
 
 import it.dani.seniorparkour.SeniorParkour;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.services.parkour.Parkour;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import lombok.Getter;
@@ -24,13 +25,17 @@ public abstract class Subcommand {
 
     public List<String> onTabComplete(String[] args) {
         ParkourService service = getPlugin().getParkourService();
-        if (args.length == 0) {
+        if (args.length == 1) {
             return service.getParkours().stream()
                     .map(Parkour::getName)
                     .collect(Collectors.toList());
         }
 
         return Collections.emptyList();
+    }
+
+    protected void sendMessage(CommandSender sender, Messages message){
+        sender.sendMessage(message.getMessage(getPlugin().getConfigManager()));
     }
 
 }

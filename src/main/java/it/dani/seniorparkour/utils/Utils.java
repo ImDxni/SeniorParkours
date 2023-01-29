@@ -2,8 +2,8 @@ package it.dani.seniorparkour.utils;
 
 
 import fr.minuskube.inv.ClickableItem;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -13,11 +13,17 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
+
 public class Utils {
+    private static final Pattern HEX_PATTERN = Pattern.compile("&#(\\w{5}[0-9a-f])");
 
     public static String color(String s){
+        s = translateHexCodes(s);
         return ChatColor.translateAlternateColorCodes('&',s);
     }
 
@@ -54,5 +60,18 @@ public class Utils {
 
             return result;
         });
+    }
+
+    private static String translateHexCodes(String textToTranslate) {
+
+        Matcher matcher = HEX_PATTERN.matcher(textToTranslate);
+        StringBuilder buffer = new StringBuilder();
+
+        while(matcher.find()) {
+            matcher.appendReplacement(buffer, ChatColor.of("#" + matcher.group(1)).toString());
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', matcher.appendTail(buffer).toString());
+
     }
 }

@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.management;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +32,7 @@ public class CreateSubcommand extends Subcommand {
             String name = args[0];
 
             getPlugin().getParkourService().createParkour(name,player.getLocation().getBlock());
-            sender.sendMessage("PARKOUR CREATO");
+            sendMessage(sender,Messages.PARKOUR_CREATED);
         }
     }
 }

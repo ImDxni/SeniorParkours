@@ -24,15 +24,6 @@ class PacketByteBuffer extends PacketDataSerializer {
         super.d(i);
     }
 
-    void writeVarIntArray(int i1) {
-        writeVarInt(1);
-        writeVarInt(i1);
-    }
-
-    void writeUUID(UUID uuid) {
-        super.a(uuid);
-    }
-
     <T> void writeDataWatcherEntry(DataWatcherKey<T> key, T value) {
         writeByte(key.getIndex());
         writeVarInt(key.getSerializerTypeID());

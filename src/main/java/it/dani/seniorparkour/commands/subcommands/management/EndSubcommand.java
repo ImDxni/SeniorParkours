@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.management;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,8 +34,9 @@ public class EndSubcommand extends Subcommand {
             ParkourService service = getPlugin().getParkourService();
             service.getParkourByName(name).ifPresentOrElse((parkour) -> {
                 service.addEndPoint(parkour,player.getLocation().getBlock());
-                sender.sendMessage("END POINT AGGIUNTO");
-            },() -> sender.sendMessage("PARKOUR NON TROVATO"));
+
+                sendMessage(sender,Messages.PARKOUR_END_CREATED);
+            },() -> sendMessage(sender,Messages.PARKOUR_NOT_FOUND));
 
         }
     }

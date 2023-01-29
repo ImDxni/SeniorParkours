@@ -8,6 +8,7 @@ import it.dani.seniorparkour.commands.subcommands.management.*;
 import it.dani.seniorparkour.commands.subcommands.top.DelTopSubcommand;
 import it.dani.seniorparkour.commands.subcommands.top.SetTopSubcommand;
 import it.dani.seniorparkour.commands.subcommands.top.TopSubcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,9 +47,11 @@ public class ParkourCommand implements CommandExecutor, TabExecutor {
             Subcommand subcommand = optionalSubcommand.get();
             if(sender.hasPermission(subcommand.getPermission())) {
                 subcommand.dispatch(sender, param);
+            } else {
+                sender.sendMessage(Messages.NO_PERMISSION.getMessage(plugin.getConfigManager()));
             }
         } else {
-            sender.sendMessage("Comando Sconosciuto");
+            sender.sendMessage(Messages.COMMAND_NOT_FOUND.getMessage(plugin.getConfigManager()));
         }
 
         return true;

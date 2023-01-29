@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands.info;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.inventories.impl.info.InfoInventory;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,7 @@ public class InfoSubcommand extends Subcommand {
             ParkourService service = getPlugin().getParkourService();
             service.getParkourByName(name).ifPresentOrElse((parkour) ->
                     new InfoInventory(getPlugin().getConfigManager(),parkour).getInventory()
-                            .open(player),() -> sender.sendMessage("PARKOUR NON TROVATO"));
+                            .open(player), () -> sendMessage(sender,Messages.PARKOUR_NOT_FOUND));
 
         }
     }

@@ -1,6 +1,8 @@
 package it.dani.seniorparkour.listeners;
 
 import it.dani.seniorparkour.SeniorParkour;
+import it.dani.seniorparkour.configuration.ConfigManager;
+import it.dani.seniorparkour.configuration.Messages;
 import it.dani.seniorparkour.database.DatabaseManager;
 import it.dani.seniorparkour.database.entity.RPlayer;
 import it.dani.seniorparkour.services.parkour.ParkourService;
@@ -17,11 +19,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MoveListener implements Listener {
     private final ParkourService service;
-    private final DatabaseManager databaseManager;
+    private final ConfigManager manager;
 
     public MoveListener(SeniorParkour plugin) {
         service = plugin.getParkourService();
-        databaseManager = plugin.getDatabaseManager();
+        manager = plugin.getConfigManager();
     }
 
     @EventHandler
@@ -31,13 +33,20 @@ public class MoveListener implements Listener {
         if(optionalPlayer.isPresent()){
             ParkourPlayer parkourPlayer = optionalPlayer.get();
 
+            if(player.isFlying()){
+                service.removeActivePlayer(player);
+
+                player.teleport(parkourPlayer.getParkour().getStart());
+                return;
+            }
+
             Location checkpoint = parkourPlayer.getNextCheckpoint();
             if(checkpoint != null) {
 
                 if (player.getLocation().getBlock().equals(checkpoint.getBlock())) {
                     parkourPlayer.incrementCheckpoint();
 
-                    player.sendMessage("Check point superato");
+                    player.sendMessage(Messages.CHECKPOINT_PASSED.getMessage(manager));
                 }
             } else {
                 Location endPoint = parkourPlayer.getParkour().getEnd();
@@ -46,16 +55,20 @@ public class MoveListener implements Listener {
 
                     if (player.getLocation().getBlock().equals(endPoint.getBlock())) {
                         service.endParkour(player);
-                        player.sendMessage("PARKOUR FINITO");
+
+                        player.sendMessage(Messages.PARKOUR_FINISHED.getMessage(manager));
                     }
                 }
             }
 
         } else {
             service.getParkourByStart(player.getLocation().getBlock()).ifPresent((parkour) -> {
+                if(parkour.getEnd() == null)
+                    return;
+
                 service.startParkour(player,parkour);
 
-                player.sendMessage("PARKOUR INIZIATO");
+                player.sendMessage(Messages.PARKOUR_STARTED.getMessage(manager));
             });
         }
     }

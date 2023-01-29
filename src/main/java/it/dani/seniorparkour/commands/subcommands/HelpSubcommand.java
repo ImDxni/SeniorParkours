@@ -2,6 +2,7 @@ package it.dani.seniorparkour.commands.subcommands;
 
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
+import it.dani.seniorparkour.configuration.Messages;
 import org.bukkit.command.CommandSender;
 
 public class HelpSubcommand extends Subcommand {
@@ -11,7 +12,7 @@ public class HelpSubcommand extends Subcommand {
 
     @Override
     public void dispatch(CommandSender sender, String[] args) {
-        sender.sendMessage("HELP COMMAND");
+        sender.sendMessage(Messages.HELP.getMessageList(getPlugin().getConfigManager()));
     }
 
     @Override
