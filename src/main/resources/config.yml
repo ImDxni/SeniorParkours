@@ -6,43 +6,48 @@ database:
 
 
 blocks:
-  start: GOLDEN_PRESSURE_PLATE
-  checkpoint: IRON_PRESSURE_PLATE
+  start: LIGHT_WEIGHTED_PRESSURE_PLATE
+  checkpoint: HEAVY_WEIGHTED_PRESSURE_PLATE
   end: STONE_PRESSURE_PLATE
 
 top:
   limit: 20
 
 scoreboard:
-  header: "PARKOUR"
+  header: "&#0da000&lP&#26b31f&lA&#3ec53d&lR&#57d85c&lK&#5be560&lO&#5ef264&lU&#62ff68&lR"
   lines:
-    - "Name: %parkour_name%"
-    - "Current Time: %parkour_time%"
-    - "Position: %parkour_position%"
-    - "Record time: %parkour_record%"
+    - ""
+    - "&2&l┃ &a&lINFO"
+    - "  &fNome: &a%parkour_name%"
+    - "  &fTempo corrente: &a%parkour_time%"
+    - " "
+    - "&2&l┃ &a&lTOP"
+    - "  &fPosizione: &a%parkour_position%"
+    - "  &fTempo record: &a%parkour_record%"
+    - "&f"
+    - "&b&nmegaparkour.net"
 
 holograms:
-  height: 5
+  height: 2
   start:
-    - "OLOGRAMMA INIZIO"
-    - "PASSA DA QUI PER INIZIARE IL PARKOUR"
+    - "&2&l»&a&l» &a&lParkour Start &a&l«&2&l«"
   checkpoint:
-    - "OLOGRAMMA CHECKPOINT"
-    - "QUESTO E' UN CHECKPOINT"
+    - "&2&l»&a&l» &a&lCheckpoint &a&l«&2&l«"
   end:
-    - "OLOGRAMMA FINE"
-    - "PASSA DA QUI PER FINIRE IL PARKOUR"
+    - "&2&l»&a&l» &a&lParkour End &a&l«&2&l«"
   top:
     format:
       top:
-        result: "&b%position%. &c%player% - %time%"
-        fallback: "&cN/A"
-      personal: "&c%position%. %player% - %time%"
+        result: "&2#%position% &8• &a%player% &8(&7%time%&8)"
+        fallback: "N/A"
+      personal: "&2#%position% &8• &a%player% &8(&7%time%&8)"
     lines:
-      - "&cParkour %parkour%"
-      - "&cStatistica personale:"
-      - "&b%personal%"
-      - "&cClassifica Globale"
+      - "&2&l»&a&l» &a&lTOP PARKOUR: %parkour% &a&l«&2&l«"
+      - "&aClassifica Globale"
       - "%top_1%"
       - "%top_2%"
       - "%top_3%"
+      - "%top_4%"
+      - "%top_5%"
+      - " "
+      - "%personal%"
