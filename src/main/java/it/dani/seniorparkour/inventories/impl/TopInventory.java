@@ -45,11 +45,7 @@ public class TopInventory extends InventoryBuilder {
             players.put(configItem.build(),record.uuid());
         }
 
-        Utils.setPlayerHead(players).thenAccept((items) -> {
-            Bukkit.getScheduler().runTask(getManager().getPlugin(), () -> {
-                createPagination(items,contents);
-            });
-        });
+        Utils.setPlayerHead(players).thenAccept((items) -> Bukkit.getScheduler().runTask(getManager().getPlugin(), () -> createPagination(items,contents)));
 
 
     }

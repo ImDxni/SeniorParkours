@@ -1,6 +1,5 @@
 package it.dani.seniorparkour.placeholders;
 
-import it.dani.seniorparkour.services.parkour.Parkour;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import it.dani.seniorparkour.services.parkour.object.ParkourPlayer;
 import it.dani.seniorparkour.utils.Utils;

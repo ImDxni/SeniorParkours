@@ -3,7 +3,6 @@ package it.dani.seniorparkour.commands.subcommands.top;
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.commands.Subcommand;
 import it.dani.seniorparkour.configuration.Messages;
-import it.dani.seniorparkour.inventories.impl.info.InfoInventory;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -264,6 +264,9 @@ public class ParkourService implements ConfigLoader {
 
     @Override
     public void unload(ConfigManager manager) {
+        if(parkours.isEmpty())
+            return;
+
         YamlConfiguration config = manager.getConfig(ConfigType.PARKOUR);
 
         config.set("parkours", null);

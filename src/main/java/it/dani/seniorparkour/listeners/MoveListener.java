@@ -3,8 +3,6 @@ package it.dani.seniorparkour.listeners;
 import it.dani.seniorparkour.SeniorParkour;
 import it.dani.seniorparkour.configuration.ConfigManager;
 import it.dani.seniorparkour.configuration.Messages;
-import it.dani.seniorparkour.database.DatabaseManager;
-import it.dani.seniorparkour.database.entity.RPlayer;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import it.dani.seniorparkour.services.parkour.object.ParkourPlayer;
 import lombok.RequiredArgsConstructor;
