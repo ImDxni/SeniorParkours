@@ -1,8 +1,8 @@
-package it.dani.seniorparkour.nms.v1_16_R3;
+package it.dani.seniorparkour.nms.v1_17_R1;
 
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.server.v1_16_R3.PacketDataSerializer;
+import net.minecraft.network.PacketDataSerializer;
 
 import java.util.UUID;
 

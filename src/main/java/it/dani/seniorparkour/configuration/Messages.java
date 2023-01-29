@@ -18,6 +18,7 @@ public enum Messages {
     CHECKPOINT_PASSED("messages.checkpoint-passed"),
     NO_CHECKPOINT("messages.no-checkpoint"),
     PARKOUR_CREATED("messages.parkour-created"),
+    PARKOUR_EXISTS("messages.parkour-exists"),
     PARKOUR_STARTED("messages.parkour-started"),
     PARKOUR_FINISHED("messages.parkour-finished"),
     PARKOUR_DELETED("messages.parkour-deleted"),

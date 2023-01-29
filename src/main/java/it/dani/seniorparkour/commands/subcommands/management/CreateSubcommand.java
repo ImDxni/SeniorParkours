@@ -31,6 +31,11 @@ public class CreateSubcommand extends Subcommand {
         if(sender instanceof Player player) {
             String name = args[0];
 
+            if(getPlugin().getParkourService().getParkourByName(name).isPresent()){
+                sendMessage(sender,Messages.PARKOUR_EXISTS);
+                return;
+            }
+
             getPlugin().getParkourService().createParkour(name,player.getLocation().getBlock());
             sendMessage(sender,Messages.PARKOUR_CREATED);
         }

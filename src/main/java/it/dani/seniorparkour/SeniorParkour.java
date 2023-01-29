@@ -13,7 +13,6 @@ import it.dani.seniorparkour.services.holograms.HologramService;
 import it.dani.seniorparkour.services.parkour.ParkourService;
 import it.dani.seniorparkour.services.scoreboard.ScoreboardManager;
 import it.dani.seniorparkour.commons.HologramAdapter;
-import it.dani.seniorparkour.nms.v1_16_R3.HologramAdapterImpl;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,8 +75,6 @@ public final class SeniorParkour extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimer(this,scoreboardManager,0,5);
 
         getCommand("parkour").setExecutor(new ParkourCommand(this));
-
-        //TODO MESSAGGI CONFIGURABILI - TOP NON FUNZIONA
     }
 
     @Override
@@ -108,12 +105,23 @@ public final class SeniorParkour extends JavaPlugin {
         String nmsVersionName = matcher.group();
 
         switch(nmsVersionName){
-
-            case "v1_16_R3" -> {
-                return new HologramAdapterImpl();
+            case "v1_19_R2" -> {
+                return new it.dani.seniorparkour.nms.v1_19_R2.HologramAdapterImpl();
             }
             case "v1_19_R1" -> {
                 return new it.dani.seniorparkour.nms.v1_19_R1.HologramAdapterImpl();
+            }
+            case "v1_18_R2" -> {
+                return new it.dani.seniorparkour.nms.v1_18_R2.HologramAdapterImpl();
+            }
+            case "v1_18_R1" -> {
+                return new it.dani.seniorparkour.nms.v1_18_R1.HologramAdapterImpl();
+            }
+            case "v1_17_R1" -> {
+                return new it.dani.seniorparkour.nms.v1_17_R1.HologramAdapterImpl();
+            }
+            case "v1_16_R3" -> {
+                return new it.dani.seniorparkour.nms.v1_16_R3.HologramAdapterImpl();
             }
             default -> {
                 return null;

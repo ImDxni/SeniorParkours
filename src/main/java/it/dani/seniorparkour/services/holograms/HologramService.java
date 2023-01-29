@@ -44,7 +44,7 @@ public class HologramService {
 
 
     private void createStaticHologram(Location loc, int height,List<String> lines){
-        Location centerLoc = loc.add(0.5,0,0.5);
+        Location centerLoc = loc.clone().add(0.5,0,0.5);
         Hologram hologram = new Hologram(centerLoc,height);
 
         lines.forEach(hologram::addLine);
@@ -80,7 +80,7 @@ public class HologramService {
 
                 String format = Utils.color(config.getString(HologramType.PARKOUR_TOP.getPath() + ".format.personal"));
 
-                hologram.addLine("", (armorStand) -> {
+                hologram.addLine("N/A", (armorStand) -> {
                     int entityID = armorStand.getEntityId();
                     adapter.setEntityID(entityID);
                     adapter.sendHologram((player) -> {
@@ -105,7 +105,7 @@ public class HologramService {
 
         holograms.add(hologram);
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin,hologram.updateTask(),0,1200);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin,hologram.updateTask(),0,20);
 
     }
 

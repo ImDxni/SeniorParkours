@@ -17,7 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 public class Utils {
     private static final Pattern HEX_PATTERN = Pattern.compile("&#(\\w{5}[0-9a-f])");
@@ -38,9 +37,9 @@ public class Utils {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
 
         return(minutes +
-                " m " +
+                "m " +
                 seconds +
-                " s");
+                "s");
     }
 
     public static CompletableFuture<ClickableItem[]> setPlayerHead(Map<ItemStack,UUID> items){

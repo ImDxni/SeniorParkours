@@ -29,8 +29,12 @@ repositories {
 
 dependencies {
     implementation project(path: ':commons')
-    implementation project(path: ':v1_16_R3')
+    implementation project(path: ':v1_19_R2')
     implementation project(path: ':v1_19_R1')
+    implementation project(path: ':v1_18_R2')
+    implementation project(path: ':v1_18_R1')
+    implementation project(path: ':v1_17_R1')
+    implementation project(path: ':v1_16_R3')
 
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.2'

@@ -25,7 +25,7 @@ public class Hologram {
     public void addLine(String line){
         lines.put(createLine(linePosition,line),(entity) -> {});
 
-        linePosition = linePosition.subtract(0,0.4,0);
+        linePosition = linePosition.subtract(0,0.3,0);
     }
 
     public void addLine(String initialLine, Consumer<ArmorStand> updater){
@@ -35,7 +35,7 @@ public class Hologram {
 
 
 
-        linePosition = linePosition.subtract(0,0.4,0);
+        linePosition = linePosition.subtract(0,0.3,0);
     }
 
     public Runnable updateTask(){
